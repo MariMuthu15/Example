@@ -25,22 +25,24 @@ class TwitterApi(APIView):
             response = requests.request("GET", url, headers=headers, data=payload)
 
             json_response = (response.json())
-            print(json_response)
+
             #using len because of its dynamics content 
             '''example : some profile not have a description or profile_pic'''
-            print(json_response)
+           
             if len(json_response['data']['description']) !=0:
                 profile_score += 10
             if len(json_response['data']['profile_image_url']) !=0:
                 profile_score += 10
-            location = (json_response['data']['location'])
-            # if location == True:
-            #     profile_score += 10
-            if len(location) != 0 :
-                profile_score += 10
-            else:
-                profile_score += 0
                 
+            try:
+                location = (json_response['data']['location'])
+                if len(location) != 0 :
+                    profile_score += 10
+                else:
+                    profile_score += 0
+            except:
+                 location = None
+
             followers =(json_response['data']['public_metrics']['followers_count'])
             if followers >= 3000:
                 profile_score += 20
@@ -59,7 +61,6 @@ class TwitterApi(APIView):
 
             tweets = (json_response['data']['public_metrics']['tweet_count'])
             total = a.days * 2400
-            print(total)
             if (total/4) <= tweets:
                 profile_score += 30
             elif (total/10) <= tweets:
